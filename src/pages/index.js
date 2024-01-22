@@ -21,6 +21,11 @@ const IndexPage = () => {
       e.preventDefault();
     });
 
+    function randomIntFromInterval(min, max) {
+      // min and max included
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
     function generatePotatoes(elapsedTime) {
       const potatoRow = document.createElement("div");
       potatoRow.dataset.elapsedTime = elapsedTime.toString();
@@ -63,6 +68,29 @@ const IndexPage = () => {
         console.log(currentTarget.clientHeight);
         peelers[parseInt(currentTarget.dataset.column) - 1].style.animation =
           "peeling 0.4s ease";
+
+        for (const touch of e.touches) {
+          console.log(touch);
+          const scoreIncrementIndicator = document.createElement("div");
+          scoreIncrementIndicator.textContent = "+10";
+          scoreIncrementIndicator.className = "scoreIncrementIndicator";
+          gameWrapper.current.append(scoreIncrementIndicator);
+          scoreIncrementIndicator.style.top = `${
+            touch.clientY - scoreIncrementIndicator.clientHeight / 2
+          }px`;
+          scoreIncrementIndicator.style.left = `${
+            touch.clientX - scoreIncrementIndicator.clientWidth / 2
+          }px`;
+          setTimeout(() => {
+            const clockwise = Math.random() < 0.5 ? 1 : -1;
+            scoreIncrementIndicator.style.transform = `translateY(-${
+              100 + randomIntFromInterval(0, 50)
+            }%) scale(${1 + randomIntFromInterval(0, 50) / 100}) rotate(${
+              clockwise * Math.floor(Math.random() * 45)
+            }deg)`;
+            scoreIncrementIndicator.style.opacity = "0";
+          }, 0);
+        }
       }
     }
 
