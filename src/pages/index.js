@@ -1,4 +1,4 @@
-import React, { createElement, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import "./../styles/index.scss";
 
@@ -69,28 +69,25 @@ const IndexPage = () => {
         peelers[parseInt(currentTarget.dataset.column) - 1].style.animation =
           "peeling 0.4s ease";
 
-        for (const touch of e.touches) {
-          console.log(touch);
-          const scoreIncrementIndicator = document.createElement("div");
-          scoreIncrementIndicator.textContent = "+10";
-          scoreIncrementIndicator.className = "scoreIncrementIndicator";
-          gameWrapper.current.append(scoreIncrementIndicator);
-          scoreIncrementIndicator.style.top = `${
-            touch.clientY - scoreIncrementIndicator.clientHeight / 2
-          }px`;
-          scoreIncrementIndicator.style.left = `${
-            touch.clientX - scoreIncrementIndicator.clientWidth / 2
-          }px`;
-          setTimeout(() => {
-            const clockwise = Math.random() < 0.5 ? 1 : -1;
-            scoreIncrementIndicator.style.transform = `translateY(-${
-              100 + randomIntFromInterval(0, 50)
-            }%) scale(${1 + randomIntFromInterval(0, 50) / 100}) rotate(${
-              clockwise * Math.floor(Math.random() * 45)
-            }deg)`;
-            scoreIncrementIndicator.style.opacity = "0";
-          }, 0);
-        }
+        const scoreIncrementIndicator = document.createElement("div");
+        scoreIncrementIndicator.textContent = "+10";
+        scoreIncrementIndicator.className = "scoreIncrementIndicator";
+        gameWrapper.current.append(scoreIncrementIndicator);
+        scoreIncrementIndicator.style.top = `${
+          e.changedTouches[0].clientY - scoreIncrementIndicator.clientHeight / 2
+        }px`;
+        scoreIncrementIndicator.style.left = `${
+          e.changedTouches[0].clientX - scoreIncrementIndicator.clientWidth / 2
+        }px`;
+        setTimeout(() => {
+          const clockwise = Math.random() < 0.5 ? 1 : -1;
+          scoreIncrementIndicator.style.transform = `translateY(-${
+            100 + randomIntFromInterval(0, 50)
+          }%) scale(${1 + randomIntFromInterval(0, 50) / 100}) rotate(${
+            clockwise * Math.floor(Math.random() * 45)
+          }deg)`;
+          scoreIncrementIndicator.style.opacity = "0";
+        }, 0);
       }
     }
 
