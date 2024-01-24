@@ -9,6 +9,7 @@ const IndexPage = () => {
   useEffect(() => {
     let start;
     let maxPotatoes = 500;
+    const staticFriesImg = gameWrapper.current.querySelector(".score img");
     const peelers = gameWrapper.current.querySelectorAll(".peelers div");
     console.log(peelers[0]);
     const peelersOffsetTop =
@@ -88,7 +89,70 @@ const IndexPage = () => {
           }deg)`;
           scoreIncrementIndicator.style.opacity = "0";
         }, 0);
+
+        const friesIncrementIndicator = document.createElement("img");
+        friesIncrementIndicator.src =
+          "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/fries.png";
+        friesIncrementIndicator.className = "friesIncrementIndicator";
+        gameWrapper.current.append(friesIncrementIndicator);
+
+        animateElementInArc(
+          friesIncrementIndicator,
+          e.changedTouches[0].clientX - scoreIncrementIndicator.clientWidth / 2,
+          e.changedTouches[0].clientY -
+            scoreIncrementIndicator.clientHeight / 2,
+          staticFriesImg.getBoundingClientRect().left,
+          staticFriesImg.getBoundingClientRect().top,
+          1000
+        );
+
+        friesIncrementIndicator.onanimationend = (e) => {
+          if (e.animationName === "friesIncrementIndicatorPulse") {
+            gameWrapper.current.removeChild(friesIncrementIndicator);
+            gameWrapper.current.removeChild(scoreIncrementIndicator);
+          }
+        };
       }
+    }
+
+    function animateElementInArc(
+      element,
+      startX,
+      startY,
+      endX,
+      endY,
+      duration
+    ) {
+      const controlX = randomIntFromInterval(0, window.innerWidth);
+      const controlY = randomIntFromInterval(startY, endY);
+
+      const startTime = Date.now();
+
+      function animate() {
+        const currentTime = Date.now();
+        const elapsedTime = currentTime - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+
+        const currentX = quadraticBezier(startX, controlX, endX, progress);
+        const currentY = quadraticBezier(startY, controlY, endY, progress);
+
+        element.style.top = currentY + "px";
+        element.style.left = currentX + "px";
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      function quadraticBezier(start, control, end, t) {
+        return (
+          Math.pow(1 - t, 2) * start +
+          2 * (1 - t) * t * control +
+          Math.pow(t, 2) * end
+        );
+      }
+
+      animate();
     }
 
     function step(timeStamp) {
@@ -126,152 +190,155 @@ const IndexPage = () => {
   return (
     <div className="potatoGame" ref={gameWrapper}>
       <div className="score">
-        <div
-          className="digits"
-          style={{
-            transform: `translateY(calc(-${Number(score[0])} * 11.4vw))`,
-          }}
-        >
-          <div>
-            <span>0</span>
+        <img src="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/fries.png" />
+        <div className="digitsWrapper">
+          <div
+            className="digits"
+            style={{
+              transform: `translateY(calc(-${Number(score[0])} * 11.4vw))`,
+            }}
+          >
+            <div>
+              <span>0</span>
+            </div>
+            <div>
+              <span>1</span>
+            </div>
+            <div>
+              <span>2</span>
+            </div>
+            <div>
+              <span>3</span>
+            </div>
+            <div>
+              <span>4</span>
+            </div>
+            <div>
+              <span>5</span>
+            </div>
+            <div>
+              <span>6</span>
+            </div>
+            <div>
+              <span>7</span>
+            </div>
+            <div>
+              <span>8</span>
+            </div>
+            <div>
+              <span>9</span>
+            </div>
           </div>
-          <div>
-            <span>1</span>
+          <div
+            className="digits"
+            style={{
+              transform: `translateY(calc(-${Number(score[1])} * 11.4vw))`,
+            }}
+          >
+            <div>
+              <span>0</span>
+            </div>
+            <div>
+              <span>1</span>
+            </div>
+            <div>
+              <span>2</span>
+            </div>
+            <div>
+              <span>3</span>
+            </div>
+            <div>
+              <span>4</span>
+            </div>
+            <div>
+              <span>5</span>
+            </div>
+            <div>
+              <span>6</span>
+            </div>
+            <div>
+              <span>7</span>
+            </div>
+            <div>
+              <span>8</span>
+            </div>
+            <div>
+              <span>9</span>
+            </div>
           </div>
-          <div>
-            <span>2</span>
+          <div
+            className="digits"
+            style={{
+              transform: `translateY(calc(-${Number(score[2])} * 11.4vw))`,
+            }}
+          >
+            <div>
+              <span>0</span>
+            </div>
+            <div>
+              <span>1</span>
+            </div>
+            <div>
+              <span>2</span>
+            </div>
+            <div>
+              <span>3</span>
+            </div>
+            <div>
+              <span>4</span>
+            </div>
+            <div>
+              <span>5</span>
+            </div>
+            <div>
+              <span>6</span>
+            </div>
+            <div>
+              <span>7</span>
+            </div>
+            <div>
+              <span>8</span>
+            </div>
+            <div>
+              <span>9</span>
+            </div>
           </div>
-          <div>
-            <span>3</span>
-          </div>
-          <div>
-            <span>4</span>
-          </div>
-          <div>
-            <span>5</span>
-          </div>
-          <div>
-            <span>6</span>
-          </div>
-          <div>
-            <span>7</span>
-          </div>
-          <div>
-            <span>8</span>
-          </div>
-          <div>
-            <span>9</span>
-          </div>
-        </div>
-        <div
-          className="digits"
-          style={{
-            transform: `translateY(calc(-${Number(score[1])} * 11.4vw))`,
-          }}
-        >
-          <div>
-            <span>0</span>
-          </div>
-          <div>
-            <span>1</span>
-          </div>
-          <div>
-            <span>2</span>
-          </div>
-          <div>
-            <span>3</span>
-          </div>
-          <div>
-            <span>4</span>
-          </div>
-          <div>
-            <span>5</span>
-          </div>
-          <div>
-            <span>6</span>
-          </div>
-          <div>
-            <span>7</span>
-          </div>
-          <div>
-            <span>8</span>
-          </div>
-          <div>
-            <span>9</span>
-          </div>
-        </div>
-        <div
-          className="digits"
-          style={{
-            transform: `translateY(calc(-${Number(score[2])} * 11.4vw))`,
-          }}
-        >
-          <div>
-            <span>0</span>
-          </div>
-          <div>
-            <span>1</span>
-          </div>
-          <div>
-            <span>2</span>
-          </div>
-          <div>
-            <span>3</span>
-          </div>
-          <div>
-            <span>4</span>
-          </div>
-          <div>
-            <span>5</span>
-          </div>
-          <div>
-            <span>6</span>
-          </div>
-          <div>
-            <span>7</span>
-          </div>
-          <div>
-            <span>8</span>
-          </div>
-          <div>
-            <span>9</span>
-          </div>
-        </div>
-        <div
-          className="digits"
-          style={{
-            transform: `translateY(calc(-${Number(score[3])} * 11.4vw))`,
-          }}
-        >
-          <div>
-            <span>0</span>
-          </div>
-          <div>
-            <span>1</span>
-          </div>
-          <div>
-            <span>2</span>
-          </div>
-          <div>
-            <span>3</span>
-          </div>
-          <div>
-            <span>4</span>
-          </div>
-          <div>
-            <span>5</span>
-          </div>
-          <div>
-            <span>6</span>
-          </div>
-          <div>
-            <span>7</span>
-          </div>
-          <div>
-            <span>8</span>
-          </div>
-          <div>
-            <span>9</span>
+          <div
+            className="digits"
+            style={{
+              transform: `translateY(calc(-${Number(score[3])} * 11.4vw))`,
+            }}
+          >
+            <div>
+              <span>0</span>
+            </div>
+            <div>
+              <span>1</span>
+            </div>
+            <div>
+              <span>2</span>
+            </div>
+            <div>
+              <span>3</span>
+            </div>
+            <div>
+              <span>4</span>
+            </div>
+            <div>
+              <span>5</span>
+            </div>
+            <div>
+              <span>6</span>
+            </div>
+            <div>
+              <span>7</span>
+            </div>
+            <div>
+              <span>8</span>
+            </div>
+            <div>
+              <span>9</span>
+            </div>
           </div>
         </div>
       </div>

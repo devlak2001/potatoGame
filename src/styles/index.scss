@@ -37,7 +37,19 @@ body {
   width: 42vw;
   height: 11.4vw;
   background-color: white;
-  overflow: hidden;
+  img {
+    width: 14.5vw;
+    height: auto;
+    margin-right: 2vw;
+    margin-top: -1vw;
+  }
+  .digitsWrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
+    height: 100%;
+  }
   .digits {
     display: flex;
     flex-direction: column;
@@ -58,6 +70,7 @@ body {
 
 .scoreIncrementIndicator {
   position: absolute;
+  z-index: 2;
   background-color: #00ff29;
   font-size: 5vw;
   font-family: Arial, Helvetica, sans-serif;
@@ -69,8 +82,47 @@ body {
   font-weight: bold;
   pointer-events: none;
   padding: 0.2em 0;
-  transform: translateY(0) scale(0);
+  // transform: translateY(0) scale(0);
   transition: transform 0.3s ease, opacity 0.2s 0.3s ease;
+}
+
+.friesIncrementIndicator {
+  position: absolute;
+  width: 14.5vw;
+  height: auto;
+  // animation: friesIncrementIndicatorFadeOut 0.3s 0.9s ease forwards;
+  animation: friesIncrementIndicatorZIndex 0.01s 0.9s steps(1) forwards,
+    friesIncrementIndicatorPulse 0.3s 1s ease;
+
+  @keyframes friesIncrementIndicatorFadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes friesIncrementIndicatorZIndex {
+    0% {
+      z-index: 1;
+    }
+    100% {
+      z-index: 101;
+    }
+  }
+
+  @keyframes friesIncrementIndicatorPulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
 }
 
 .potatoRow {
@@ -80,6 +132,7 @@ body {
   height: 25vw;
   width: 80vw;
   column-gap: 3vw;
+  z-index: 2;
   img {
     grid-row: 1;
     width: 100%;
