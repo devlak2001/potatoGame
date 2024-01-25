@@ -8,6 +8,7 @@ const IndexPage = () => {
 
   useEffect(() => {
     let start;
+    let potatoFallingDuration = 10000;
     let maxPotatoes = 500;
     const staticFriesImg = gameWrapper.current.querySelector(".score img");
     const peelers = gameWrapper.current.querySelectorAll(".peelers div");
@@ -16,11 +17,29 @@ const IndexPage = () => {
       gameWrapper.current.querySelector(".peelers").offsetTop;
     const peelersHeight =
       gameWrapper.current.querySelector(".peelers").clientHeight;
-    let speed = 0.1;
 
     document.addEventListener("gesturestart", function (e) {
       e.preventDefault();
     });
+
+    function numberTransition(start, end, duration) {
+      const interval = 10; // Interval in milliseconds
+      const steps = duration / interval;
+      const stepValue = (end - start) / steps;
+
+      let stepCount = 0;
+
+      const transitionInterval = setInterval(() => {
+        potatoFallingDuration += stepValue;
+        stepCount++;
+
+        if (stepCount >= steps) {
+          clearInterval(transitionInterval);
+        }
+      }, interval);
+    }
+
+    numberTransition(potatoFallingDuration, 2500, 30000);
 
     function randomIntFromInterval(min, max) {
       // min and max included
@@ -63,7 +82,6 @@ const IndexPage = () => {
           peelersOffsetTop + peelersHeight
       ) {
         currentTarget.classList.add("clicked");
-        setScore((score) => (Number(score) + 10).toString().padStart(4, "0"));
         peelers[parseInt(currentTarget.dataset.column) - 1].style.animation =
           "none";
         console.log(currentTarget.clientHeight);
@@ -110,6 +128,14 @@ const IndexPage = () => {
           if (e.animationName === "friesIncrementIndicatorPulse") {
             gameWrapper.current.removeChild(friesIncrementIndicator);
             gameWrapper.current.removeChild(scoreIncrementIndicator);
+          }
+        };
+
+        friesIncrementIndicator.onanimationstart = (e) => {
+          if (e.animationName === "friesIncrementIndicatorPulse") {
+            setScore((score) =>
+              (Number(score) + 10).toString().padStart(4, "0")
+            );
           }
         };
       }
@@ -166,18 +192,19 @@ const IndexPage = () => {
         generatePotatoes(elapsed);
       }
 
-      if (speed < 0.3) {
-        speed = 0.1 + elapsed / 100000;
-      }
-
       if (potatoRows[0].offsetTop > window.innerHeight) {
         gameWrapper.current.removeChild(potatoRows[0]);
       }
 
       potatoRows.forEach((el) => {
-        el.style.bottom = `${
-          window.innerHeight - (elapsed - el.dataset.elapsedTime) * speed
-        }px`;
+        const value =
+          (elapsed - el.dataset.elapsedTime) / potatoFallingDuration;
+        if (value < 1) {
+          el.style.bottom = `${
+            window.innerHeight -
+            (window.innerHeight + window.innerWidth / 3) * value
+          }px`;
+        }
       });
 
       requestAnimationFrame(step);
@@ -359,6 +386,16 @@ export const Head = () => (
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
+    <link
+      rel="preload"
+      as="image"
+      href="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potato.png"
+    ></link>
+    <link
+      rel="preload"
+      as="image"
+      href="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/fries.png"
+    ></link>
     <title>Home Page</title>
   </>
 );

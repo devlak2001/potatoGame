@@ -94,14 +94,14 @@ body {
   animation: friesIncrementIndicatorZIndex 0.01s 0.9s steps(1) forwards,
     friesIncrementIndicatorPulse 0.3s 1s ease;
 
-  @keyframes friesIncrementIndicatorFadeOut {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
+  // @keyframes friesIncrementIndicatorFadeOut {
+  //   0% {
+  //     opacity: 1;
+  //   }
+  //   100% {
+  //     opacity: 0;
+  //   }
+  // }
 
   @keyframes friesIncrementIndicatorZIndex {
     0% {
