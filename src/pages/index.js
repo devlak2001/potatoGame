@@ -24,7 +24,7 @@ const IndexPage = () => {
   useEffect(() => {
     let start = Date.now(),
       potatoFallingDuration = 10000,
-      maxPotatoes = 500;
+      potatoRows = gameWrapper.current.querySelectorAll(".potatoRow");
 
     document.addEventListener("gesturestart", function (e) {
       e.preventDefault();
@@ -34,7 +34,7 @@ const IndexPage = () => {
       if (document.hidden && !paused.current) {
         paused.current = true;
         lastPauseTimestamp.current = Date.now();
-        setGamePuased((gamePuased) => true);
+        setGamePuased(() => true);
       }
     });
 
@@ -42,7 +42,7 @@ const IndexPage = () => {
       if (!paused.current) {
         paused.current = true;
         lastPauseTimestamp.current = Date.now();
-        setGamePuased((gamePuased) => true);
+        setGamePuased(() => true);
       }
     });
 
@@ -78,7 +78,9 @@ const IndexPage = () => {
       const potatoRow = document.createElement("div");
       potatoRow.dataset.elapsedTime = elapsedTime.toString();
       potatoRow.className = "potatoRow";
-      potatoRow.style.bottom = `${window.innerHeight}px`;
+      potatoRow.style.bottom = `${
+        window.innerHeight - window.innerWidth * 0.115 - 32
+      }px`;
 
       const numPotatoes = Math.random() < 0.5 ? 1 : 2;
       const columns = [1, 2, 3];
@@ -99,6 +101,7 @@ const IndexPage = () => {
         columns.splice(randomIndex, 1);
       }
       gameWrapper.current.prepend(potatoRow);
+      potatoRows = gameWrapper.current.querySelectorAll(".potatoRow");
     }
 
     gameWrapper.current.addEventListener("touchstart", potatoOnTouchStart);
@@ -216,15 +219,6 @@ const IndexPage = () => {
     function step() {
       if (!paused.current) {
         const elapsed = Date.now() - start - timePaused.current;
-        const potatoRows = gameWrapper.current.querySelectorAll(".potatoRow");
-
-        if (potatoRows[0].offsetTop > 0) {
-          generatePotatoes(elapsed);
-        }
-
-        if (potatoRows[potatoRows.length - 1].offsetTop > window.innerHeight) {
-          gameWrapper.current.removeChild(potatoRows[potatoRows.length - 1]);
-        }
 
         potatoRows.forEach((el) => {
           const value =
@@ -232,10 +226,20 @@ const IndexPage = () => {
           if (value < 1) {
             el.style.bottom = `${
               window.innerHeight -
+              window.innerWidth * 0.115 -
+              32 -
               (window.innerHeight + window.innerWidth / 3) * value
             }px`;
           }
         });
+
+        if (potatoRows[0].offsetTop > window.innerWidth * 0.115 + 32) {
+          generatePotatoes(elapsed);
+        }
+
+        if (potatoRows[potatoRows.length - 1].offsetTop > window.innerHeight) {
+          gameWrapper.current.removeChild(potatoRows[potatoRows.length - 1]);
+        }
       }
       requestAnimationFrame(step);
     }
@@ -304,7 +308,7 @@ const IndexPage = () => {
 const AnimatedNumber = ({ number }) => {
   return (
     <>
-      {Array.from(number.toString()).map((digit) => (
+      {Array.from(number).map((digit) => (
         <div
           className="digits"
           style={{
