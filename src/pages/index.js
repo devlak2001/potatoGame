@@ -254,276 +254,13 @@ const IndexPage = () => {
               src="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/fries.png"
             />
             <div className="digitsWrapper">
-              <div
-                className="digits"
-                style={{
-                  transform: `translateY(calc(-${Number(score[0])} * 11.4vw))`,
-                }}
-              >
-                <div>
-                  <span>0</span>
-                </div>
-                <div>
-                  <span>1</span>
-                </div>
-                <div>
-                  <span>2</span>
-                </div>
-                <div>
-                  <span>3</span>
-                </div>
-                <div>
-                  <span>4</span>
-                </div>
-                <div>
-                  <span>5</span>
-                </div>
-                <div>
-                  <span>6</span>
-                </div>
-                <div>
-                  <span>7</span>
-                </div>
-                <div>
-                  <span>8</span>
-                </div>
-                <div>
-                  <span>9</span>
-                </div>
-              </div>
-              <div
-                className="digits"
-                style={{
-                  transform: `translateY(calc(-${Number(score[1])} * 11.4vw))`,
-                }}
-              >
-                <div>
-                  <span>0</span>
-                </div>
-                <div>
-                  <span>1</span>
-                </div>
-                <div>
-                  <span>2</span>
-                </div>
-                <div>
-                  <span>3</span>
-                </div>
-                <div>
-                  <span>4</span>
-                </div>
-                <div>
-                  <span>5</span>
-                </div>
-                <div>
-                  <span>6</span>
-                </div>
-                <div>
-                  <span>7</span>
-                </div>
-                <div>
-                  <span>8</span>
-                </div>
-                <div>
-                  <span>9</span>
-                </div>
-              </div>
-              <div
-                className="digits"
-                style={{
-                  transform: `translateY(calc(-${Number(score[2])} * 11.4vw))`,
-                }}
-              >
-                <div>
-                  <span>0</span>
-                </div>
-                <div>
-                  <span>1</span>
-                </div>
-                <div>
-                  <span>2</span>
-                </div>
-                <div>
-                  <span>3</span>
-                </div>
-                <div>
-                  <span>4</span>
-                </div>
-                <div>
-                  <span>5</span>
-                </div>
-                <div>
-                  <span>6</span>
-                </div>
-                <div>
-                  <span>7</span>
-                </div>
-                <div>
-                  <span>8</span>
-                </div>
-                <div>
-                  <span>9</span>
-                </div>
-              </div>
-              <div
-                className="digits"
-                style={{
-                  transform: `translateY(calc(-${Number(score[3])} * 11.4vw))`,
-                }}
-              >
-                <div>
-                  <span>0</span>
-                </div>
-                <div>
-                  <span>1</span>
-                </div>
-                <div>
-                  <span>2</span>
-                </div>
-                <div>
-                  <span>3</span>
-                </div>
-                <div>
-                  <span>4</span>
-                </div>
-                <div>
-                  <span>5</span>
-                </div>
-                <div>
-                  <span>6</span>
-                </div>
-                <div>
-                  <span>7</span>
-                </div>
-                <div>
-                  <span>8</span>
-                </div>
-                <div>
-                  <span>9</span>
-                </div>
-              </div>
+              <AnimatedNumber number={score} />
             </div>
           </div>
           <div className="potatoesNumber">
             <img src="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potato.png" />
             <div className="digitsWrapper">
-              <div
-                className="digits"
-                style={{
-                  transform: `translateY(calc(-${Number(
-                    potatoesNumber[0]
-                  )} * 5.2vw))`,
-                }}
-              >
-                <div>
-                  <span>0</span>
-                </div>
-                <div>
-                  <span>1</span>
-                </div>
-                <div>
-                  <span>2</span>
-                </div>
-                <div>
-                  <span>3</span>
-                </div>
-                <div>
-                  <span>4</span>
-                </div>
-                <div>
-                  <span>5</span>
-                </div>
-                <div>
-                  <span>6</span>
-                </div>
-                <div>
-                  <span>7</span>
-                </div>
-                <div>
-                  <span>8</span>
-                </div>
-                <div>
-                  <span>9</span>
-                </div>
-              </div>
-              <div
-                className="digits"
-                style={{
-                  transform: `translateY(calc(-${Number(
-                    potatoesNumber[1]
-                  )} * 5.2vw))`,
-                }}
-              >
-                <div>
-                  <span>0</span>
-                </div>
-                <div>
-                  <span>1</span>
-                </div>
-                <div>
-                  <span>2</span>
-                </div>
-                <div>
-                  <span>3</span>
-                </div>
-                <div>
-                  <span>4</span>
-                </div>
-                <div>
-                  <span>5</span>
-                </div>
-                <div>
-                  <span>6</span>
-                </div>
-                <div>
-                  <span>7</span>
-                </div>
-                <div>
-                  <span>8</span>
-                </div>
-                <div>
-                  <span>9</span>
-                </div>
-              </div>
-              <div
-                className="digits"
-                style={{
-                  transform: `translateY(calc(-${Number(
-                    potatoesNumber[2]
-                  )} * 5.2vw))`,
-                }}
-              >
-                <div>
-                  <span>0</span>
-                </div>
-                <div>
-                  <span>1</span>
-                </div>
-                <div>
-                  <span>2</span>
-                </div>
-                <div>
-                  <span>3</span>
-                </div>
-                <div>
-                  <span>4</span>
-                </div>
-                <div>
-                  <span>5</span>
-                </div>
-                <div>
-                  <span>6</span>
-                </div>
-                <div>
-                  <span>7</span>
-                </div>
-                <div>
-                  <span>8</span>
-                </div>
-                <div>
-                  <span>9</span>
-                </div>
-              </div>
+              <AnimatedNumber number={potatoesNumber} />
             </div>
           </div>
           <button
@@ -560,6 +297,52 @@ const IndexPage = () => {
           </div>
         )}
       </div>
+    </>
+  );
+};
+
+const AnimatedNumber = ({ number }) => {
+  return (
+    <>
+      {Array.from(number.toString()).map((digit) => (
+        <div
+          className="digits"
+          style={{
+            transform: `translateY(-${(digit / 10) * 100}%)`,
+          }}
+        >
+          <div>
+            <span>0</span>
+          </div>
+          <div>
+            <span>1</span>
+          </div>
+          <div>
+            <span>2</span>
+          </div>
+          <div>
+            <span>3</span>
+          </div>
+          <div>
+            <span>4</span>
+          </div>
+          <div>
+            <span>5</span>
+          </div>
+          <div>
+            <span>6</span>
+          </div>
+          <div>
+            <span>7</span>
+          </div>
+          <div>
+            <span>8</span>
+          </div>
+          <div>
+            <span>9</span>
+          </div>
+        </div>
+      ))}
     </>
   );
 };
