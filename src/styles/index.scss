@@ -5,10 +5,21 @@
 }
 
 html,
-body {
+body,
+.minigame {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button {
+  appearance: none;
+  border: inherit;
+  background: inherit;
+  color: inherit;
 }
 
 .potatoGame {
@@ -18,53 +29,118 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   background-color: black;
   width: 100%;
   height: 100%;
   overflow: hidden;
 }
 
-.score {
-  border-radius: 2.5vw;
+.topBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
   z-index: 100;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  position: absolute;
-  top: 25px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: bold;
-  width: 42vw;
-  height: 11.4vw;
-  background-color: white;
-  img {
-    width: 14.5vw;
-    height: auto;
-    margin-right: 2vw;
-    margin-top: -1vw;
-  }
-  .digitsWrapper {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    overflow: hidden;
-    height: 100%;
-  }
-  .digits {
+  height: calc(11.4vw + 32px);
+  padding: 16px 0;
+  background-color: black;
+  gap: 2vw;
+
+  .potatoesNumber {
+    border-radius: 2.5vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    font-size: 8.15vw;
-    transition: transform 0.35s ease;
-    div {
-      height: 11.4vw;
-      span {
-        display: flex;
-        height: 100%;
-        align-items: center;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    width: 11.5vw;
+    font-size: 5.6vw;
+    img {
+      width: 85%;
+      height: auto;
+    }
+    .digitsWrapper {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow: hidden;
+      height: 100%;
+      background-color: #ff7a2e;
+      height: 5.2vw;
+    }
+    .digits {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      transition: transform 0.35s ease;
+      div {
+        height: 5.2vw;
+        span {
+          display: flex;
+          height: 100%;
+          align-items: center;
+        }
       }
     }
+  }
+
+  .score {
+    border-radius: 2.5vw;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    width: 42vw;
+    height: 100%;
+    background-color: white;
+    font-size: 8.15vw;
+    img {
+      width: 14.5vw;
+      height: auto;
+      margin-right: 2vw;
+      margin-top: -1vw;
+    }
+    .digitsWrapper {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow: hidden;
+      height: 100%;
+    }
+    .digits {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      transition: transform 0.35s ease;
+      div {
+        height: 11.4vw;
+        span {
+          display: flex;
+          height: 100%;
+          align-items: center;
+        }
+      }
+    }
+  }
+
+  .pauseButton {
+    background-color: white;
+    width: 11.4vw;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5vw;
+    border-radius: 2.5vw;
   }
 }
 
@@ -90,6 +166,7 @@ body {
   position: absolute;
   width: 14.5vw;
   height: auto;
+  pointer-events: none;
   // animation: friesIncrementIndicatorFadeOut 0.3s 0.9s ease forwards;
   animation: friesIncrementIndicatorZIndex 0.01s 0.9s steps(1) forwards,
     friesIncrementIndicatorPulse 0.3s 1s ease;
@@ -125,6 +202,32 @@ body {
   }
 }
 
+.pausePopup {
+  position: absolute;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    button {
+      background-color: white;
+      font-size: 5vw;
+      border-radius: 2.5vw;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      padding: 0.6em 1em;
+    }
+  }
+}
+
 .potatoRow {
   position: absolute;
   display: grid;
@@ -133,13 +236,16 @@ body {
   width: 80vw;
   column-gap: 3vw;
   z-index: 2;
-  img {
+  div {
+    user-select: none;
     grid-row: 1;
     width: 100%;
     height: 100%;
-    object-fit: contain;
     transition: transform 0.3s cubic-bezier(0.075, 0.82, 0.165, 1),
       opacity 0.2s 0.05s ease;
+    background-image: url("https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potato.png");
+    background-size: contain;
+    background-position: center;
     &.clicked {
       transform: scale(0);
       opacity: 0;

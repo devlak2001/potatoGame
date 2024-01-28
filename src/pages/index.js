@@ -1,26 +1,57 @@
 import React, { useEffect, useRef, useState } from "react";
+import { FaPause } from "react-icons/fa";
 
 import "./../styles/index.scss";
 
+function randomIntFromInterval(min, max) {
+  // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 const IndexPage = () => {
   const gameWrapper = useRef(null);
+  const staticFriesImg = useRef(null);
+  const paused = useRef(false);
+  const [gamePuased, setGamePuased] = useState(false);
+  const lastPauseTimestamp = useRef(undefined);
+  const timePaused = useRef(0);
   const [score, setScore] = useState("0000");
+  const potatoesNumberRef = useRef(500);
+  const [potatoesNumber, setPotatoesNumber] = useState(
+    potatoesNumberRef.current.toString()
+  );
 
   useEffect(() => {
-    let start;
-    let potatoFallingDuration = 10000;
-    let maxPotatoes = 500;
-    const staticFriesImg = gameWrapper.current.querySelector(".score img");
-    const peelers = gameWrapper.current.querySelectorAll(".peelers div");
-    console.log(peelers[0]);
-    const peelersOffsetTop =
-      gameWrapper.current.querySelector(".peelers").offsetTop;
-    const peelersHeight =
-      gameWrapper.current.querySelector(".peelers").clientHeight;
+    let start = Date.now(),
+      potatoFallingDuration = 10000,
+      maxPotatoes = 500;
 
     document.addEventListener("gesturestart", function (e) {
       e.preventDefault();
     });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && !paused.current) {
+        paused.current = true;
+        lastPauseTimestamp.current = Date.now();
+        setGamePuased((gamePuased) => true);
+      }
+    });
+
+    window.addEventListener("blur", () => {
+      if (!paused.current) {
+        paused.current = true;
+        lastPauseTimestamp.current = Date.now();
+        setGamePuased((gamePuased) => true);
+      }
+    });
+
+    const peelers = gameWrapper.current.querySelectorAll(".peelers div");
+
+    const peelersOffsetTop =
+      gameWrapper.current.querySelector(".peelers").offsetTop;
+    const peelersHeight =
+      gameWrapper.current.querySelector(".peelers").clientHeight;
 
     function numberTransition(start, end, duration) {
       const interval = 10; // Interval in milliseconds
@@ -30,21 +61,18 @@ const IndexPage = () => {
       let stepCount = 0;
 
       const transitionInterval = setInterval(() => {
-        potatoFallingDuration += stepValue;
-        stepCount++;
+        if (!paused.current) {
+          potatoFallingDuration += stepValue;
+          stepCount++;
 
-        if (stepCount >= steps) {
-          clearInterval(transitionInterval);
+          if (stepCount >= steps) {
+            clearInterval(transitionInterval);
+          }
         }
       }, interval);
     }
 
     numberTransition(potatoFallingDuration, 2500, 30000);
-
-    function randomIntFromInterval(min, max) {
-      // min and max included
-      return Math.floor(Math.random() * (max - min + 1) + min);
-    }
 
     function generatePotatoes(elapsedTime) {
       const potatoRow = document.createElement("div");
@@ -54,28 +82,32 @@ const IndexPage = () => {
 
       const numPotatoes = Math.random() < 0.5 ? 1 : 2;
       const columns = [1, 2, 3];
-      for (let i = 0; i < numPotatoes && maxPotatoes > 0; i++) {
+      for (let i = 0; i < numPotatoes && potatoesNumberRef.current > 0; i++) {
         const randomIndex = Math.floor(Math.random() * columns.length);
 
-        const potato = document.createElement("img");
-        potato.src =
-          "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potato.png";
+        const potato = document.createElement("div");
         potato.style.gridColumn = `${columns[randomIndex]}`;
-        potato.dataset.peelable = "false";
         potato.dataset.column = `${columns[randomIndex]}`;
-        potato.ontouchstart = potatoOnTouchStart;
+        potato.className = "potato";
         potatoRow.append(potato);
 
-        maxPotatoes--;
+        potatoesNumberRef.current--;
+        setPotatoesNumber(
+          potatoesNumberRef.current.toString().padStart(3, "0")
+        );
 
         columns.splice(randomIndex, 1);
       }
-      gameWrapper.current.append(potatoRow);
+      gameWrapper.current.prepend(potatoRow);
     }
 
+    gameWrapper.current.addEventListener("touchstart", potatoOnTouchStart);
+
     function potatoOnTouchStart(e) {
-      const currentTarget = e.currentTarget;
+      e.preventDefault();
+      const currentTarget = e.target;
       if (
+        e.target.classList.contains("potato") &&
         currentTarget.getBoundingClientRect().top + currentTarget.clientHeight >
           peelersOffsetTop &&
         currentTarget.getBoundingClientRect().top <
@@ -119,8 +151,8 @@ const IndexPage = () => {
           e.changedTouches[0].clientX - scoreIncrementIndicator.clientWidth / 2,
           e.changedTouches[0].clientY -
             scoreIncrementIndicator.clientHeight / 2,
-          staticFriesImg.getBoundingClientRect().left,
-          staticFriesImg.getBoundingClientRect().top,
+          staticFriesImg.current.getBoundingClientRect().left,
+          staticFriesImg.current.getBoundingClientRect().top,
           1000
         );
 
@@ -181,32 +213,30 @@ const IndexPage = () => {
       animate();
     }
 
-    function step(timeStamp) {
-      if (start === undefined) {
-        start = timeStamp;
-      }
-      const elapsed = timeStamp - start;
-      const potatoRows = gameWrapper.current.querySelectorAll(".potatoRow");
+    function step() {
+      if (!paused.current) {
+        const elapsed = Date.now() - start - timePaused.current;
+        const potatoRows = gameWrapper.current.querySelectorAll(".potatoRow");
 
-      if (potatoRows[potatoRows.length - 1].offsetTop > 0) {
-        generatePotatoes(elapsed);
-      }
-
-      if (potatoRows[0].offsetTop > window.innerHeight) {
-        gameWrapper.current.removeChild(potatoRows[0]);
-      }
-
-      potatoRows.forEach((el) => {
-        const value =
-          (elapsed - el.dataset.elapsedTime) / potatoFallingDuration;
-        if (value < 1) {
-          el.style.bottom = `${
-            window.innerHeight -
-            (window.innerHeight + window.innerWidth / 3) * value
-          }px`;
+        if (potatoRows[0].offsetTop > 0) {
+          generatePotatoes(elapsed);
         }
-      });
 
+        if (potatoRows[potatoRows.length - 1].offsetTop > window.innerHeight) {
+          gameWrapper.current.removeChild(potatoRows[potatoRows.length - 1]);
+        }
+
+        potatoRows.forEach((el) => {
+          const value =
+            (elapsed - el.dataset.elapsedTime) / potatoFallingDuration;
+          if (value < 1) {
+            el.style.bottom = `${
+              window.innerHeight -
+              (window.innerHeight + window.innerWidth / 3) * value
+            }px`;
+          }
+        });
+      }
       requestAnimationFrame(step);
     }
 
@@ -215,166 +245,322 @@ const IndexPage = () => {
   }, [setScore]);
 
   return (
-    <div className="potatoGame" ref={gameWrapper}>
-      <div className="score">
-        <img src="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/fries.png" />
-        <div className="digitsWrapper">
-          <div
-            className="digits"
-            style={{
-              transform: `translateY(calc(-${Number(score[0])} * 11.4vw))`,
-            }}
-          >
-            <div>
-              <span>0</span>
-            </div>
-            <div>
-              <span>1</span>
-            </div>
-            <div>
-              <span>2</span>
-            </div>
-            <div>
-              <span>3</span>
-            </div>
-            <div>
-              <span>4</span>
-            </div>
-            <div>
-              <span>5</span>
-            </div>
-            <div>
-              <span>6</span>
-            </div>
-            <div>
-              <span>7</span>
-            </div>
-            <div>
-              <span>8</span>
-            </div>
-            <div>
-              <span>9</span>
+    <>
+      <div className="minigame">
+        <div className="topBar">
+          <div className="score">
+            <img
+              ref={staticFriesImg}
+              src="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/fries.png"
+            />
+            <div className="digitsWrapper">
+              <div
+                className="digits"
+                style={{
+                  transform: `translateY(calc(-${Number(score[0])} * 11.4vw))`,
+                }}
+              >
+                <div>
+                  <span>0</span>
+                </div>
+                <div>
+                  <span>1</span>
+                </div>
+                <div>
+                  <span>2</span>
+                </div>
+                <div>
+                  <span>3</span>
+                </div>
+                <div>
+                  <span>4</span>
+                </div>
+                <div>
+                  <span>5</span>
+                </div>
+                <div>
+                  <span>6</span>
+                </div>
+                <div>
+                  <span>7</span>
+                </div>
+                <div>
+                  <span>8</span>
+                </div>
+                <div>
+                  <span>9</span>
+                </div>
+              </div>
+              <div
+                className="digits"
+                style={{
+                  transform: `translateY(calc(-${Number(score[1])} * 11.4vw))`,
+                }}
+              >
+                <div>
+                  <span>0</span>
+                </div>
+                <div>
+                  <span>1</span>
+                </div>
+                <div>
+                  <span>2</span>
+                </div>
+                <div>
+                  <span>3</span>
+                </div>
+                <div>
+                  <span>4</span>
+                </div>
+                <div>
+                  <span>5</span>
+                </div>
+                <div>
+                  <span>6</span>
+                </div>
+                <div>
+                  <span>7</span>
+                </div>
+                <div>
+                  <span>8</span>
+                </div>
+                <div>
+                  <span>9</span>
+                </div>
+              </div>
+              <div
+                className="digits"
+                style={{
+                  transform: `translateY(calc(-${Number(score[2])} * 11.4vw))`,
+                }}
+              >
+                <div>
+                  <span>0</span>
+                </div>
+                <div>
+                  <span>1</span>
+                </div>
+                <div>
+                  <span>2</span>
+                </div>
+                <div>
+                  <span>3</span>
+                </div>
+                <div>
+                  <span>4</span>
+                </div>
+                <div>
+                  <span>5</span>
+                </div>
+                <div>
+                  <span>6</span>
+                </div>
+                <div>
+                  <span>7</span>
+                </div>
+                <div>
+                  <span>8</span>
+                </div>
+                <div>
+                  <span>9</span>
+                </div>
+              </div>
+              <div
+                className="digits"
+                style={{
+                  transform: `translateY(calc(-${Number(score[3])} * 11.4vw))`,
+                }}
+              >
+                <div>
+                  <span>0</span>
+                </div>
+                <div>
+                  <span>1</span>
+                </div>
+                <div>
+                  <span>2</span>
+                </div>
+                <div>
+                  <span>3</span>
+                </div>
+                <div>
+                  <span>4</span>
+                </div>
+                <div>
+                  <span>5</span>
+                </div>
+                <div>
+                  <span>6</span>
+                </div>
+                <div>
+                  <span>7</span>
+                </div>
+                <div>
+                  <span>8</span>
+                </div>
+                <div>
+                  <span>9</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div
-            className="digits"
-            style={{
-              transform: `translateY(calc(-${Number(score[1])} * 11.4vw))`,
-            }}
-          >
-            <div>
-              <span>0</span>
-            </div>
-            <div>
-              <span>1</span>
-            </div>
-            <div>
-              <span>2</span>
-            </div>
-            <div>
-              <span>3</span>
-            </div>
-            <div>
-              <span>4</span>
-            </div>
-            <div>
-              <span>5</span>
-            </div>
-            <div>
-              <span>6</span>
-            </div>
-            <div>
-              <span>7</span>
-            </div>
-            <div>
-              <span>8</span>
-            </div>
-            <div>
-              <span>9</span>
+          <div className="potatoesNumber">
+            <img src="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potato.png" />
+            <div className="digitsWrapper">
+              <div
+                className="digits"
+                style={{
+                  transform: `translateY(calc(-${Number(
+                    potatoesNumber[0]
+                  )} * 5.2vw))`,
+                }}
+              >
+                <div>
+                  <span>0</span>
+                </div>
+                <div>
+                  <span>1</span>
+                </div>
+                <div>
+                  <span>2</span>
+                </div>
+                <div>
+                  <span>3</span>
+                </div>
+                <div>
+                  <span>4</span>
+                </div>
+                <div>
+                  <span>5</span>
+                </div>
+                <div>
+                  <span>6</span>
+                </div>
+                <div>
+                  <span>7</span>
+                </div>
+                <div>
+                  <span>8</span>
+                </div>
+                <div>
+                  <span>9</span>
+                </div>
+              </div>
+              <div
+                className="digits"
+                style={{
+                  transform: `translateY(calc(-${Number(
+                    potatoesNumber[1]
+                  )} * 5.2vw))`,
+                }}
+              >
+                <div>
+                  <span>0</span>
+                </div>
+                <div>
+                  <span>1</span>
+                </div>
+                <div>
+                  <span>2</span>
+                </div>
+                <div>
+                  <span>3</span>
+                </div>
+                <div>
+                  <span>4</span>
+                </div>
+                <div>
+                  <span>5</span>
+                </div>
+                <div>
+                  <span>6</span>
+                </div>
+                <div>
+                  <span>7</span>
+                </div>
+                <div>
+                  <span>8</span>
+                </div>
+                <div>
+                  <span>9</span>
+                </div>
+              </div>
+              <div
+                className="digits"
+                style={{
+                  transform: `translateY(calc(-${Number(
+                    potatoesNumber[2]
+                  )} * 5.2vw))`,
+                }}
+              >
+                <div>
+                  <span>0</span>
+                </div>
+                <div>
+                  <span>1</span>
+                </div>
+                <div>
+                  <span>2</span>
+                </div>
+                <div>
+                  <span>3</span>
+                </div>
+                <div>
+                  <span>4</span>
+                </div>
+                <div>
+                  <span>5</span>
+                </div>
+                <div>
+                  <span>6</span>
+                </div>
+                <div>
+                  <span>7</span>
+                </div>
+                <div>
+                  <span>8</span>
+                </div>
+                <div>
+                  <span>9</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div
-            className="digits"
-            style={{
-              transform: `translateY(calc(-${Number(score[2])} * 11.4vw))`,
+          <button
+            className="pauseButton"
+            onClick={() => {
+              paused.current = true;
+              lastPauseTimestamp.current = Date.now();
+              setGamePuased(true);
             }}
           >
-            <div>
-              <span>0</span>
-            </div>
-            <div>
-              <span>1</span>
-            </div>
-            <div>
-              <span>2</span>
-            </div>
-            <div>
-              <span>3</span>
-            </div>
-            <div>
-              <span>4</span>
-            </div>
-            <div>
-              <span>5</span>
-            </div>
-            <div>
-              <span>6</span>
-            </div>
-            <div>
-              <span>7</span>
-            </div>
-            <div>
-              <span>8</span>
-            </div>
-            <div>
-              <span>9</span>
-            </div>
-          </div>
-          <div
-            className="digits"
-            style={{
-              transform: `translateY(calc(-${Number(score[3])} * 11.4vw))`,
-            }}
-          >
-            <div>
-              <span>0</span>
-            </div>
-            <div>
-              <span>1</span>
-            </div>
-            <div>
-              <span>2</span>
-            </div>
-            <div>
-              <span>3</span>
-            </div>
-            <div>
-              <span>4</span>
-            </div>
-            <div>
-              <span>5</span>
-            </div>
-            <div>
-              <span>6</span>
-            </div>
-            <div>
-              <span>7</span>
-            </div>
-            <div>
-              <span>8</span>
-            </div>
-            <div>
-              <span>9</span>
-            </div>
+            <FaPause />
+          </button>
+        </div>
+        <div className="potatoGame" ref={gameWrapper}>
+          <div className="peelers">
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
         </div>
+        {gamePuased && (
+          <div className="pausePopup">
+            <div>
+              <button
+                onClick={() => {
+                  paused.current = false;
+                  timePaused.current += Date.now() - lastPauseTimestamp.current;
+                  setGamePuased(false);
+                }}
+              >
+                CONTINUE
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-      <div className="peelers">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    </div>
+    </>
   );
 };
 
