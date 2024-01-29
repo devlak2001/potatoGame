@@ -1,7 +1,7 @@
 import { Howl } from "howler";
 import { useEffect } from "react";
 
-export const Sound = {
+const Sound = {
   potatoTapSound: new Howl({
     src: [
       "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potatoTap.mp3",
@@ -60,3 +60,5 @@ export const useSound = () => {
     });
   }, []);
 };
+
+export defualt Sound;
