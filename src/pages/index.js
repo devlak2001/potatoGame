@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPause } from "react-icons/fa";
 import { GiSoundOff, GiSoundOn } from "react-icons/gi";
-import Sound from "./Sound";
+import { useSound, Sound } from "./Sound";
 
 import "./../styles/index.scss";
 
@@ -23,6 +23,8 @@ const IndexPage = () => {
     potatoesNumberRef.current.toString()
   );
   const [muted, setMuted] = useState(true);
+
+  useSound();
 
   useEffect(() => {
     let start = Date.now(),

@@ -1,6 +1,7 @@
 import { Howl } from "howler";
+import { useEffect } from "react";
 
-const Sound = {
+export const Sound = {
   potatoTapSound: new Howl({
     src: [
       "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potatoTap.mp3",
@@ -24,36 +25,38 @@ const Sound = {
   }),
 };
 
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    Object.keys(Sound).forEach((key) => {
-      if (Sound[key].playing()) {
-        Sound[key].pause();
+export const useSound = () => {
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        Object.keys(Sound).forEach((key) => {
+          if (Sound[key].playing()) {
+            Sound[key].pause();
+          }
+        });
+      } else {
+        Object.keys(Sound).forEach((key) => {
+          if (Sound[key].seek() && !Sound[key].playing()) {
+            Sound[key].play();
+          }
+        });
       }
     });
-  } else {
-    Object.keys(Sound).forEach((key) => {
-      if (Sound[key].seek() && !Sound[key].playing()) {
-        Sound[key].play();
-      }
+
+    window.addEventListener("blur", () => {
+      Object.keys(Sound).forEach((key) => {
+        if (Sound[key].playing()) {
+          Sound[key].pause();
+        }
+      });
     });
-  }
-});
 
-window.addEventListener("blur", () => {
-  Object.keys(Sound).forEach((key) => {
-    if (Sound[key].playing()) {
-      Sound[key].pause();
-    }
-  });
-});
-
-window.addEventListener("focus", () => {
-  Object.keys(Sound).forEach((key) => {
-    if (Sound[key].seek() && !Sound[key].playing()) {
-      Sound[key].play();
-    }
-  });
-});
-
-export default Sound;
+    window.addEventListener("focus", () => {
+      Object.keys(Sound).forEach((key) => {
+        if (Sound[key].seek() && !Sound[key].playing()) {
+          Sound[key].play();
+        }
+      });
+    });
+  }, []);
+};
