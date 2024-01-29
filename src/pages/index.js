@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPause } from "react-icons/fa";
-import { Howl } from "howler";
 import { GiSoundOff, GiSoundOn } from "react-icons/gi";
+import Sound from "./Sound";
 
 import "./../styles/index.scss";
 
@@ -9,29 +9,6 @@ function randomIntFromInterval(min, max) {
   // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
-
-const potatoTapSound = new Howl({
-  src: [
-    "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potatoTap.mp3",
-  ],
-});
-
-const potatoCollectedSound = new Howl({
-  src: [
-    "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/collectedSound.mp3",
-  ],
-});
-
-const gameBackgroundSound = new Howl({
-  src: [
-    "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/gameBackground.mp3",
-  ],
-  loop: true,
-});
-
-potatoTapSound.volume(0);
-gameBackgroundSound.volume(0);
-potatoCollectedSound.volume(0);
 
 const IndexPage = () => {
   const gameWrapper = useRef(null);
@@ -143,7 +120,7 @@ const IndexPage = () => {
         currentTarget.getBoundingClientRect().top <
           peelersOffsetTop + peelersHeight
       ) {
-        potatoTapSound.play();
+        Sound.potatoTapSound.play();
         currentTarget.classList.add("clicked");
         peelers[parseInt(currentTarget.dataset.column) - 1].style.animation =
           "none";
@@ -196,7 +173,7 @@ const IndexPage = () => {
 
         friesIncrementIndicator.onanimationstart = (e) => {
           if (e.animationName === "friesIncrementIndicatorPulse") {
-            potatoCollectedSound.play();
+            Sound.potatoCollectedSound.play();
             setScore((score) =>
               (Number(score) + 10).toString().padStart(4, "0")
             );
@@ -285,17 +262,19 @@ const IndexPage = () => {
             className="muteButton"
             onClick={() => {
               if (muted) {
-                potatoTapSound.volume(1);
-                gameBackgroundSound.volume(1);
-                potatoCollectedSound.volume(1);
+                Sound.potatoTapSound.volume(1);
+                Sound.gameBackgroundSound.volume(1);
+                Sound.potatoCollectedSound.volume(1);
 
-                if (!gameBackgroundSound.playing()) {
-                  gameBackgroundSound.play();
+                if (!Sound.gameBackgroundSound.playing()) {
+                  Sound.gameBackgroundSound.play();
                 }
               } else {
-                potatoTapSound.volume(0);
-                gameBackgroundSound.volume(0);
-                potatoCollectedSound.volume(0);
+                Sound.potatoTapSound.volume(0);
+                Sound.potatoCollectedSound.volume(0);
+                if (Sound.gameBackgroundSound.playing()) {
+                  Sound.gameBackgroundSound.pause();
+                }
               }
               setMuted(!muted);
             }}
@@ -422,7 +401,7 @@ export const Head = () => (
     <link
       rel="preload"
       as="audio"
-      href="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/gameBackground.mp3"
+      href="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/himnaSrbije.mp3"
     ></link>
     <title>Home Page</title>
   </>
