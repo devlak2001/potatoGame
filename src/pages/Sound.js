@@ -61,4 +61,4 @@ export const useSound = () => {
   }, []);
 };
 
-export defualt Sound;
+export default Sound;
