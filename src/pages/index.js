@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPause } from "react-icons/fa";
 import { GiSoundOff, GiSoundOn } from "react-icons/gi";
-import Sound, { useSound } from "./Sound";
+import Sound, { useSound } from "../Sound";
 
 import "./../styles/index.scss";
 
