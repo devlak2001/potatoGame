@@ -29,6 +29,10 @@ const gameBackgroundSound = new Howl({
   loop: true,
 });
 
+potatoTapSound.volume(0);
+gameBackgroundSound.volume(0);
+potatoCollectedSound.volume(0);
+
 const IndexPage = () => {
   const gameWrapper = useRef(null);
   const staticFriesImg = useRef(null);
@@ -283,6 +287,7 @@ const IndexPage = () => {
               if (muted) {
                 potatoTapSound.volume(1);
                 gameBackgroundSound.volume(1);
+                potatoCollectedSound.volume(1);
 
                 if (!gameBackgroundSound.playing()) {
                   gameBackgroundSound.play();
@@ -290,6 +295,7 @@ const IndexPage = () => {
               } else {
                 potatoTapSound.volume(0);
                 gameBackgroundSound.volume(0);
+                potatoCollectedSound.volume(0);
               }
               setMuted(!muted);
             }}
@@ -314,12 +320,6 @@ const IndexPage = () => {
           <button
             className="pauseButton"
             onClick={() => {
-              // convertAudioUrlToByteArray(
-              //   "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potatoTap.mp3"
-              // );
-
-              // audioContext = new (window.AudioContext ||
-              //   window.webkitAudioContext)();
               paused.current = true;
               lastPauseTimestamp.current = Date.now();
               setGamePuased(true);
