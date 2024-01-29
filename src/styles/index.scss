@@ -132,7 +132,8 @@ button {
     }
   }
 
-  .pauseButton {
+  .pauseButton,
+  .muteButton {
     background-color: white;
     width: 11.4vw;
     height: 100%;
@@ -141,6 +142,9 @@ button {
     justify-content: center;
     font-size: 5vw;
     border-radius: 2.5vw;
+  }
+  .muteButton {
+    font-size: 8vw;
   }
 }
 

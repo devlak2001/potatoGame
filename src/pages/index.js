@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPause } from "react-icons/fa";
+import { Howl } from "howler";
+import { GiSoundOff, GiSoundOn } from "react-icons/gi";
 
 import "./../styles/index.scss";
 
@@ -7,6 +9,25 @@ function randomIntFromInterval(min, max) {
   // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+const potatoTapSound = new Howl({
+  src: [
+    "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potatoTap.mp3",
+  ],
+});
+
+const potatoCollectedSound = new Howl({
+  src: [
+    "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/collectedSound.mp3",
+  ],
+});
+
+const gameBackgroundSound = new Howl({
+  src: [
+    "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/gameBackground.mp3",
+  ],
+  loop: true,
+});
 
 const IndexPage = () => {
   const gameWrapper = useRef(null);
@@ -20,6 +41,7 @@ const IndexPage = () => {
   const [potatoesNumber, setPotatoesNumber] = useState(
     potatoesNumberRef.current.toString()
   );
+  const [muted, setMuted] = useState(true);
 
   useEffect(() => {
     let start = Date.now(),
@@ -108,6 +130,7 @@ const IndexPage = () => {
 
     function potatoOnTouchStart(e) {
       e.preventDefault();
+
       const currentTarget = e.target;
       if (
         e.target.classList.contains("potato") &&
@@ -116,6 +139,7 @@ const IndexPage = () => {
         currentTarget.getBoundingClientRect().top <
           peelersOffsetTop + peelersHeight
       ) {
+        potatoTapSound.play();
         currentTarget.classList.add("clicked");
         peelers[parseInt(currentTarget.dataset.column) - 1].style.animation =
           "none";
@@ -168,6 +192,7 @@ const IndexPage = () => {
 
         friesIncrementIndicator.onanimationstart = (e) => {
           if (e.animationName === "friesIncrementIndicatorPulse") {
+            potatoCollectedSound.play();
             setScore((score) =>
               (Number(score) + 10).toString().padStart(4, "0")
             );
@@ -252,6 +277,25 @@ const IndexPage = () => {
     <>
       <div className="minigame">
         <div className="topBar">
+          <button
+            className="muteButton"
+            onClick={() => {
+              if (muted) {
+                potatoTapSound.volume(1);
+                gameBackgroundSound.volume(1);
+
+                if (!gameBackgroundSound.playing()) {
+                  gameBackgroundSound.play();
+                }
+              } else {
+                potatoTapSound.volume(0);
+                gameBackgroundSound.volume(0);
+              }
+              setMuted(!muted);
+            }}
+          >
+            {muted ? <GiSoundOff /> : <GiSoundOn />}
+          </button>
           <div className="score">
             <img
               ref={staticFriesImg}
@@ -270,6 +314,12 @@ const IndexPage = () => {
           <button
             className="pauseButton"
             onClick={() => {
+              // convertAudioUrlToByteArray(
+              //   "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/potatoTap.mp3"
+              // );
+
+              // audioContext = new (window.AudioContext ||
+              //   window.webkitAudioContext)();
               paused.current = true;
               lastPauseTimestamp.current = Date.now();
               setGamePuased(true);
@@ -278,13 +328,13 @@ const IndexPage = () => {
             <FaPause />
           </button>
         </div>
-        <div className="potatoGame" ref={gameWrapper}>
+        <button className="potatoGame" ref={gameWrapper}>
           <div className="peelers">
             <div></div>
             <div></div>
             <div></div>
           </div>
-        </div>
+        </button>
         {gamePuased && (
           <div className="pausePopup">
             <div>
@@ -368,6 +418,11 @@ export const Head = () => (
       rel="preload"
       as="image"
       href="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/fries.png"
+    ></link>
+    <link
+      rel="preload"
+      as="audio"
+      href="https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/gameBackground.mp3"
     ></link>
     <title>Home Page</title>
   </>
