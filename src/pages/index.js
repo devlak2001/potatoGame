@@ -27,6 +27,7 @@ const IndexPage = () => {
   useSound();
 
   useEffect(() => {
+    const documentFragment = document.createDocumentFragment();
     let start = Date.now(),
       potatoFallingDuration = 10000,
       potatoRows = gameWrapper.current.querySelectorAll(".potatoRow");
@@ -150,38 +151,71 @@ const IndexPage = () => {
           scoreIncrementIndicator.style.opacity = "0";
         }, 0);
 
-        const friesIncrementIndicator = document.createElement("img");
-        friesIncrementIndicator.src =
-          "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/fries.png";
-        friesIncrementIndicator.className = "friesIncrementIndicator";
-        gameWrapper.current.append(friesIncrementIndicator);
+        setScore((score) => (Number(score) + 10).toString().padStart(4, "0"));
+
+        // const friesIncrementIndicator = document.createElement("img");
+        // friesIncrementIndicator.src =
+        //   "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/fries.png";
+        // friesIncrementIndicator.className = "friesIncrementIndicator";
+        // gameWrapper.current.append(friesIncrementIndicator);
+
+        // animateElementInArc(
+        //   friesIncrementIndicator,
+        //   e.changedTouches[0].clientX - scoreIncrementIndicator.clientWidth / 2,
+        //   e.changedTouches[0].clientY -
+        //     scoreIncrementIndicator.clientHeight / 2,
+        //   staticFriesImg.current.getBoundingClientRect().left,
+        //   staticFriesImg.current.getBoundingClientRect().top,
+        //   1000
+        // );
+        setTimeout(() => {
+          gameWrapper.current.removeChild(scoreIncrementIndicator);
+        }, 500);
+        generateFries(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+
+        // friesIncrementIndicator.onanimationend = (e) => {
+        //   if (e.animationName === "friesIncrementIndicatorPulse") {
+        //     gameWrapper.current.removeChild(friesIncrementIndicator);
+        //     gameWrapper.current.removeChild(scoreIncrementIndicator);
+        //   }
+        // };
+
+        // friesIncrementIndicator.onanimationstart = (e) => {
+        //   if (e.animationName === "friesIncrementIndicatorPulse") {
+        //     Sound.potatoCollectedSound.play();
+        //     setScore((score) =>
+        //       (Number(score) + 10).toString().padStart(4, "0")
+        //     );
+        //   }
+        // };
+      }
+    }
+
+    function generateFries(x, y) {
+      for (let i = 0; i < 10; i++) {
+        const generatedFry = document.createElement("img");
+        generatedFry.src =
+          "https://devlak2001.s3.eu-central-1.amazonaws.com/potatoPeeler/fry.svg";
+        generatedFry.className = "generatedFry";
+        documentFragment.appendChild(generatedFry);
+
+        generatedFry.style.transform = `rotate(${randomIntFromInterval(
+          0,
+          360
+        )}deg)`;
+
+        const randomX = randomIntFromInterval(x - 25, x + 25);
 
         animateElementInArc(
-          friesIncrementIndicator,
-          e.changedTouches[0].clientX - scoreIncrementIndicator.clientWidth / 2,
-          e.changedTouches[0].clientY -
-            scoreIncrementIndicator.clientHeight / 2,
-          staticFriesImg.current.getBoundingClientRect().left,
-          staticFriesImg.current.getBoundingClientRect().top,
-          1000
+          generatedFry,
+          randomX,
+          randomIntFromInterval(y - 25, y + 25),
+          randomIntFromInterval(randomX - 25, randomX + 25),
+          window.innerHeight,
+          750
         );
-
-        friesIncrementIndicator.onanimationend = (e) => {
-          if (e.animationName === "friesIncrementIndicatorPulse") {
-            gameWrapper.current.removeChild(friesIncrementIndicator);
-            gameWrapper.current.removeChild(scoreIncrementIndicator);
-          }
-        };
-
-        friesIncrementIndicator.onanimationstart = (e) => {
-          if (e.animationName === "friesIncrementIndicatorPulse") {
-            Sound.potatoCollectedSound.play();
-            setScore((score) =>
-              (Number(score) + 10).toString().padStart(4, "0")
-            );
-          }
-        };
       }
+      gameWrapper.current.appendChild(documentFragment);
     }
 
     function animateElementInArc(
@@ -192,8 +226,8 @@ const IndexPage = () => {
       endY,
       duration
     ) {
-      const controlX = randomIntFromInterval(0, window.innerWidth);
-      const controlY = randomIntFromInterval(startY, endY);
+      const controlX = startX;
+      const controlY = randomIntFromInterval(startY - 100, startY);
 
       const startTime = Date.now();
 
@@ -210,6 +244,8 @@ const IndexPage = () => {
 
         if (progress < 1) {
           requestAnimationFrame(animate);
+        } else {
+          gameWrapper.current.removeChild(element);
         }
       }
 

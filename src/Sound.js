@@ -61,4 +61,10 @@ export const useSound = () => {
   }, []);
 };
 
+export const muteSound = () => {
+  Object.keys(Sound).forEach((key) => {
+    Sound[key].volume(0);
+  });
+};
+
 export default Sound;
